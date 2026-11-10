@@ -1,0 +1,33 @@
+name: afterimage
+version: 0.1.0
+manifest_version: 2
+description: >
+  Afterimage records a computer-use flow once, previews each step as a
+  Double Exposure HUD (viewfinder brackets, cyan/magenta afterimage cursor,
+  dark-glass dock, live token meter), and replays matching steps at fixed
+  positions with zero model calls. Replay stops on a mismatch; handing a
+  drifted step back to the AI is experimental.
+author: LucianaiB
+license: MIT
+homepage: https://github.com/LucianaiB2004/hermes-afterimage
+tags: [computer-use, rpa, overlay, desktop, replay]
+requires_hermes: ">=0.23.0"
+capabilities:
+  - llm.model_override
+python_dependencies:
+  - "Pillow>=10,<13"
+  - "python-xlib>=0.33,<0.34"
+  - "mss>=9,<11"
+provides_tools:
+  - afterimage_locate
+  - afterimage_begin_record
+  - afterimage_end_record
+  - afterimage_list
+  - afterimage_rehearse
+  - afterimage_replay
+provides_hooks:
+  - post_tool_call
+  - pre_llm_call
+  - post_api_request
+  - post_auxiliary_call
+  - on_session_finalize

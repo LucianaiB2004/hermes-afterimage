@@ -1,0 +1,3 @@
+The local ChatGPT sidebar mock is already open on this display. Window title: "ChatGPT". Local HTML only — do not visit chatgpt.com.
+
+Call afterimage_rehearse with name="delete-top-chat" and repair=true. Do not click the UI yourself; the tool drives the desktop. When it returns, summarize ok, each step's status, token count, and the log, then stop.

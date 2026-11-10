@@ -1,0 +1,10 @@
+[project]
+name = "hermes-afterimage"
+version = "0.1.0"
+description = "Afterimage: record, rehearse, and zero-token replay for Hermes computer use"
+requires-python = ">=3.11"
+dependencies = [
+  "Pillow>=10,<13",
+  "python-xlib>=0.33,<0.34",
+  "mss>=9,<11",
+]

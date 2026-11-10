@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ChatGPT</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+@font-face {
+  font-family: InterLocal;
+  src: url("Inter.ttf") format("truetype");
+  font-weight: 100 900;
+  font-display: swap;
+}
+:root {
+  --sb: #171717;
+  --sb-hover: #212121;
+  --sb-active: #2f2f2f;
+  --main: #212121;
+  --text: #ececec;
+  --muted: #8f8f8f;
+  --faint: #5d5d5d;
+  --line: #2e2e2e;
+  --danger: #f93a37;
+  --danger-bg: #3a1919;
+  --composer: #2f2f2f;
+  --white: #f8f8f8;
+  --radius: 10px;
+  --sidebar-w: 260px;
+  --row-h: 36px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--sb); color: var(--text);
+  font-family: InterLocal, Inter, "Segoe UI", system-ui, sans-serif;
+  font-size: 14px; letter-spacing: -0.01em; overflow: hidden; user-select: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.app { display: flex; height: 100%; }
+
+/* —— Sidebar —— */
+.sidebar {
+  width: var(--sidebar-w); min-width: var(--sidebar-w); height: 100%;
+  background: var(--sb); display: flex; flex-direction: column;
+  border-right: 1px solid #000;
+}
+.sb-top { padding: 10px 10px 6px; display: flex; flex-direction: column; gap: 2px; }
+.sb-brand, .sb-item {
+  display: flex; align-items: center; gap: 10px;
+  height: 40px; padding: 0 10px; border-radius: var(--radius);
+  color: var(--text); width: 100%; text-align: left;
+}
+.sb-brand { font-weight: 600; font-size: 15px; }
+.sb-brand:hover, .sb-item:hover { background: var(--sb-hover); }
+.sb-item .label { flex: 1; }
+.sb-item .kbd { color: var(--faint); font-size: 11px; }
+.icon { width: 18px; height: 18px; flex: none; display: inline-flex; }
+.icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.logo { width: 22px; height: 22px; flex: none; }
+.section-label {
+  color: var(--muted); font-size: 11px; font-weight: 600;
+  padding: 14px 20px 6px; letter-spacing: .02em;
+}
+.chats { flex: 1; overflow: hidden; padding: 0 8px 8px; }
+.row {
+  height: var(--row-h); display: flex; align-items: center; gap: 0;
+  padding: 0 4px 0 12px; border-radius: var(--radius); position: relative;
+  color: var(--text);
+}
+.row:hover, .row.open { background: var(--sb-hover); }
+.row.active { background: var(--sb-active); }
+.row .title {
+  flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font-size: 14px; font-weight: 400; line-height: var(--row-h);
+  padding-right: 8px;
+}
+.kebab-slot { width: 72px; flex: none; display: flex; justify-content: flex-end; align-items: center; }
+.kebab {
+  width: 28px; height: 28px; border-radius: 6px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  opacity: .55; color: var(--text);
+}
+.row:hover .kebab, .row.open .kebab, .row.active .kebab { opacity: 1; }
+.kebab:hover { background: #3a3a3a; }
+.kebab svg { width: 16px; height: 16px; fill: currentColor; }
+.sb-foot {
+  padding: 8px 10px 12px; border-top: 1px solid #000;
+}
+.profile { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: var(--radius); }
+.profile:hover { background: var(--sb-hover); }
+.avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #5b4b8a; display: grid; place-items: center;
+  font-size: 12px; font-weight: 650; color: #fff;
+}
+.profile .meta { display: flex; flex-direction: column; line-height: 1.2; }
+.profile .name { font-size: 13px; font-weight: 560; }
+.profile .plan { font-size: 11px; color: var(--muted); }
+
+/* —— Main —— */
+.main { flex: 1; background: var(--main); display: flex; flex-direction: column; min-width: 0; }
+.topbar {
+  height: 52px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; color: var(--text);
+}
+.model { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 16px; padding: 6px 10px; border-radius: 8px; }
+.model:hover { background: #2a2a2a; }
+.model svg { width: 14px; height: 14px; }
+.badge {
+  font-size: 11px; font-weight: 550; color: #b8b8b8;
+  border: 1px solid #3a3a3a; background: #2a2a2a;
+  border-radius: 999px; padding: 3px 8px; letter-spacing: .01em;
+}
+.thread { flex: 1; overflow: hidden; padding: 12px 0 0; display: flex; flex-direction: column; }
+.thread-inner { width: min(720px, calc(100% - 80px)); margin: 0 auto; display: flex; flex-direction: column; gap: 22px; padding-top: 12px; }
+.empty { flex: 1; display: grid; place-items: center; color: var(--text); }
+.empty h1 { font-size: 28px; font-weight: 600; letter-spacing: -.03em; }
+.msg { display: flex; gap: 16px; align-items: flex-start; }
+.msg .who {
+  width: 28px; height: 28px; border-radius: 50%; flex: none;
+  display: grid; place-items: center; font-size: 11px; font-weight: 700;
+}
+.msg.user .who { background: #4b6bfb; color: #fff; }
+.msg.bot .who { background: #10a37f; color: #fff; }
+.msg .bubble { flex: 1; padding-top: 4px; font-size: 15px; line-height: 1.55; color: #d9d9d9; font-weight: 430; }
+.msg .bubble p + p { margin-top: 8px; }
+.composer-wrap { padding: 8px 16px 20px; }
+.composer {
+  width: min(720px, calc(100% - 80px)); margin: 0 auto;
+  background: var(--composer); border: 1px solid #3a3a3a;
+  border-radius: 26px; min-height: 52px;
+  display: flex; align-items: center; padding: 6px 8px 6px 18px; gap: 8px;
+}
+.composer .ph { flex: 1; color: #8a8a8a; font-size: 15px; }
+.send {
+  width: 36px; height: 36px; border-radius: 50%; background: #fff; color: #0d0d0d;
+  display: grid; place-items: center;
+}
+.send svg { width: 18px; height: 18px; fill: currentColor; }
+.disclaimer { text-align: center; color: var(--faint); font-size: 11px; margin-top: 8px; }
+
+/* —— Popover —— */
+.menu {
+  position: fixed; z-index: 50; width: 190px;
+  background: #2f2f2f; border: 1px solid #3d3d3d;
+  border-radius: 12px; padding: 6px; box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  display: none;
+}
+.menu.show { display: block; }
+.menu button {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  height: 36px; padding: 0 10px; border-radius: 8px; text-align: left; font-size: 14px;
+}
+.menu button:hover { background: #3a3a3a; }
+.menu button.danger { color: var(--danger); }
+.menu button.danger:hover { background: var(--danger-bg); }
+.menu .sep { height: 1px; background: #3d3d3d; margin: 4px 6px; }
+.menu svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+/* —— Modal —— */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  display: none; align-items: center; justify-content: center; z-index: 80;
+}
+.overlay.show { display: flex; }
+.dialog {
+  width: 416px; background: #2f2f2f; border: 1px solid #3d3d3d;
+  border-radius: 16px; padding: 22px 22px 18px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.55);
+}
+.dialog h2 { font-size: 18px; font-weight: 600; letter-spacing: -.02em; margin-bottom: 8px; }
+.dialog p { color: #c8c8c8; font-size: 14px; line-height: 1.5; }
+.dialog .hint { color: var(--muted); font-size: 12px; margin-top: 8px; }
+.actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 22px; }
+.btn {
+  height: 40px; padding: 0 16px; border-radius: 999px; font-size: 14px; font-weight: 550;
+}
+.btn.cancel { background: transparent; color: var(--text); }
+.btn.cancel:hover { background: #3a3a3a; }
+.btn.confirm {
+  background: #fff; color: #0d0d0d; min-width: 88px;
+}
+.btn.confirm:hover { background: #e8e8e8; }
+.btn.confirm.moved { margin-right: 48px; } /* drift: shifted */
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sb-top">
+      <button class="sb-brand" type="button">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22">
+            <circle cx="12" cy="12" r="10.2" fill="none" stroke="#ececec" stroke-width="1.4"/>
+            <path d="M12 5.4c2.4 2.1 3.3 4.6 2.7 7.3-.5 2.2-2 3.8-4.4 5M12 5.4C9.6 7.5 8.7 10 9.3 12.7c.5 2.2 2 3.8 4.4 5M6.2 9.2h11.6M6.2 14.8h11.6" fill="none" stroke="#ececec" stroke-width="1.35" stroke-linecap="round"/>
+          </svg>
+        </span>
+        ChatGPT
+      </button>
+      <button class="sb-item" type="button">
+        <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+        <span class="label">New chat</span>
+      </button>
+      <button class="sb-item" type="button">
+        <span class="icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-3.5-3.5"/></svg></span>
+        <span class="label">Search chats</span>
+      </button>
+    </div>
+    <div class="section-label">Today</div>
+    <div class="chats" id="chats"></div>
+    <div class="sb-foot">
+      <div class="profile">
+        <div class="avatar">DE</div>
+        <div class="meta">
+          <div class="name">Demo user</div>
+          <div class="plan">Local mock · no network</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <button class="model" type="button">ChatGPT
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 8l5 5 5-5"/></svg>
+      </button>
+      <span class="badge">Local mock — not chatgpt.com</span>
+    </div>
+    <div class="thread" id="thread"></div>
+    <div class="composer-wrap">
+      <div class="composer">
+        <div class="ph">Ask anything</div>
+        <div class="send" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+      <div class="disclaimer">This is a local Afterimage demo. It never talks to OpenAI or chatgpt.com.</div>
+    </div>
+  </main>
+</div>
+
+<div class="menu" id="menu" role="menu">
+  <button type="button" data-act="share"><svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v14"/></svg>Share</button>
+  <button type="button" data-act="rename"><svg viewBox="0 0 24 24"><path d="M4 20h4l10.5-10.5-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>Rename</button>
+  <button type="button" data-act="archive"><svg viewBox="0 0 24 24"><path d="M4 7h16v11a1 1 0 01-1 1H5a1 1 0 01-1-1V7z"/><path d="M2 4h20v3H2z"/><path d="M10 12h4"/></svg>Archive</button>
+  <div class="sep"></div>
+  <button type="button" class="danger" id="menuDelete" data-act="delete"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 12h10l1-12"/></svg>Delete</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="dialog" role="dialog" aria-labelledby="dlgTitle">
+    <h2 id="dlgTitle">Delete chat?</h2>
+    <p id="dlgBody">This will delete <strong id="dlgName"></strong>.</p>
+    <p class="hint">Local mock only — no real ChatGPT conversation is removed.</p>
+    <div class="actions">
+      <button class="btn cancel" type="button" id="btnCancel">Cancel</button>
+      <button class="btn confirm" type="button" id="btnConfirm">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DRIFT = new URLSearchParams(location.search).get("drift") === "1";
+const STARTER = [
+  { id: "c1", title: "Weekend trip ideas",
+    user: "Suggest a two-day weekend trip within a few hours of a mid-size city.",
+    bot: "Pick one focus — hiking, food, or a small museum town — and keep travel under three hours each way. Pack a loose Saturday hike and a slow Sunday morning, with one dinner reservation so the trip still feels unhurried." },
+  { id: "c2", title: "Python list sort",
+    user: "How do I sort a list of dicts by a key in Python?",
+    bot: "Use sorted(rows, key=lambda r: r[\"name\"]) for a new list, or rows.sort(key=...) to sort in place. Add reverse=True when you want descending order." },
+  { id: "c3", title: "Sourdough starter timing",
+    user: "When should I feed a sourdough starter before baking?",
+    bot: "Feed it so it peaks around the time you mix the dough — often 4 to 6 hours after a feeding at room temperature. It's ready when it's bubbly, domed, and a small spoonful floats in water." },
+  { id: "c4", title: "Weekend meal plan",
+    user: "Give me a simple weekend meal plan for two.",
+    bot: "Keep Saturday dinner as the only 'project' meal. Use leftovers plus eggs for Sunday brunch, and a soup or grain bowl for Sunday night so shopping stays short." },
+  { id: "c5", title: "CSS grid cheatsheet",
+    user: "What are the CSS Grid properties I actually use?",
+    bot: "Start with display:grid, grid-template-columns, gap, and minmax(). Use grid-column for span, and align-items / justify-content for alignment. Subgrid is optional; most layouts never need it." },
+  { id: "c6", title: "Hiking packing list",
+    user: "A day-hike packing list for cool weather.",
+    bot: "Layers, a light rain shell, 2 liters of water, snacks, a map or offline app, a basic first-aid kit, a headlamp, and one extra warm layer. Add microspikes only if the trail report mentions ice." },
+  { id: "c7", title: "Explain big-O notation",
+    user: "Explain big-O as if I have used lists but not proofs.",
+    bot: "Big-O describes how work grows as the input grows. Scanning a list once is O(n). A nested loop over the same list is O(n²). A dictionary lookup is typically O(1). It ignores constants and talks about the dominant term." },
+  { id: "c8", title: "Gift ideas for a gardener",
+    user: "Gift ideas for someone who gardens on a balcony.",
+    bot: "Think compact and useful: a good pair of snips, a watering can with a narrow spout, seed packets for herbs, or a sturdy grow light. Skip large tools they can't store." },
+];
+
+let chats = STARTER.map(c => ({...c}));
+let activeId = chats[0].id;
+let menuFor = null;
+
+const $chats = document.getElementById("chats");
+const $menu = document.getElementById("menu");
+const $overlay = document.getElementById("overlay");
+const $dlgName = document.getElementById("dlgName");
+const $btnConfirm = document.getElementById("btnConfirm");
+const $thread = document.getElementById("thread");
+
+if (DRIFT) {
+  $btnConfirm.textContent = "Remove";
+  $btnConfirm.classList.add("moved");
+}
+
+function renderList() {
+  $chats.innerHTML = "";
+  chats.forEach((c, i) => {
+    const row = document.createElement("div");
+    row.className = "row" + (c.id === activeId ? " active" : "");
+    row.dataset.id = c.id;
+    row.dataset.index = String(i);
+    row.innerHTML = `<div class="title">${escapeHtml(c.title)}</div>
+      <div class="kebab-slot">
+      <button class="kebab" type="button" aria-label="Open conversation menu" data-kebab="${c.id}">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3" cy="8" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="13" cy="8" r="1.4"/></svg>
+      </button></div>`;
+    row.addEventListener("click", (e) => {
+      if (e.target.closest(".kebab")) return;
+      closeMenu();
+      activeId = c.id;
+      render();
+    });
+    row.querySelector(".kebab").addEventListener("click", (e) => {
+      e.stopPropagation();
+      openMenu(c.id, e.currentTarget);
+    });
+    $chats.appendChild(row);
+  });
+}
+
+function renderThread() {
+  const c = chats.find(x => x.id === activeId);
+  if (!c) {
+    $thread.innerHTML = `<div class="empty"><h1>What's on the agenda today?</h1></div>`;
+    return;
+  }
+  $thread.innerHTML = `<div class="thread-inner">
+    <div class="msg user"><div class="who">YO</div><div class="bubble"><p>${escapeHtml(c.user)}</p></div></div>
+    <div class="msg bot"><div class="who">GPT</div><div class="bubble"><p>${escapeHtml(c.bot)}</p></div></div>
+  </div>`;
+}
+
+function render() { renderList(); renderThread(); }
+
+function openMenu(id, btn) {
+  menuFor = id;
+  document.querySelectorAll(".row").forEach(r => r.classList.toggle("open", r.dataset.id === id));
+  const r = btn.getBoundingClientRect();
+  $menu.classList.add("show");
+  // Prefer opening to the right of the kebab; stay on screen.
+  let left = Math.round(r.right + 6);
+  let top = Math.round(r.top - 4);
+  $menu.style.left = left + "px";
+  $menu.style.top = top + "px";
+}
+
+function closeMenu() {
+  menuFor = null;
+  $menu.classList.remove("show");
+  document.querySelectorAll(".row").forEach(r => r.classList.remove("open"));
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
+}
+
+document.getElementById("menuDelete").addEventListener("click", () => {
+  const c = chats.find(x => x.id === menuFor);
+  if (!c) return;
+  $dlgName.textContent = c.title;
+  $overlay.dataset.id = c.id;
+  $overlay.classList.add("show");
+  closeMenu();
+});
+
+document.getElementById("btnCancel").addEventListener("click", () => {
+  $overlay.classList.remove("show");
+});
+
+$btnConfirm.addEventListener("click", () => {
+  const id = $overlay.dataset.id;
+  const idx = chats.findIndex(c => c.id === id);
+  chats = chats.filter(c => c.id !== id);
+  if (activeId === id) activeId = chats[0] ? chats[0].id : null;
+  $overlay.classList.remove("show");
+  closeMenu();
+  render();
+});
+
+$overlay.addEventListener("click", (e) => {
+  if (e.target === $overlay) $overlay.classList.remove("show");
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { closeMenu(); $overlay.classList.remove("show"); }
+  if (e.key === "r" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); reset(); }
+});
+document.addEventListener("click", (e) => {
+  if (!$menu.contains(e.target) && !e.target.closest(".kebab")) closeMenu();
+});
+
+function reset() {
+  chats = STARTER.map(c => ({...c}));
+  activeId = chats[0].id;
+  closeMenu();
+  $overlay.classList.remove("show");
+  render();
+}
+window.resetDemo = reset;
+render();
+</script>
+</body>
+</html>

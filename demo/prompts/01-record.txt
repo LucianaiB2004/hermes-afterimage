@@ -1,0 +1,31 @@
+The local ChatGPT sidebar mock is already open on this display. Its window title is exactly "ChatGPT". This is a local HTML file, not chatgpt.com. Do not open a browser, do not visit any website, and do not use the terminal.
+
+Use these exact targets on every computer_use call:
+  pid: __PID__
+  window_id: __WID__
+
+Record a 3-step Afterimage flow that deletes the TOP chat in the left sidebar.
+
+1. Call afterimage_begin_record with name="delete-top-chat", description="Delete top sidebar chat", and planned_steps=[{"title":"Open … menu","expect":"Delete menu appears"},{"title":"Click Delete","expect":"Confirm dialog opens"},{"title":"Confirm delete","expect":"Chat removed, list slides up"}].
+
+2. computer_use action="capture" mode="vision" with pid and window_id above.
+
+3. afterimage_locate target="the three horizontal dots button at the right end of the top conversation row (Weekend trip ideas) in the left sidebar, not New chat, not Search".
+
+4. computer_use action="click" with that coordinate, delivery_mode="foreground", and the same pid and window_id.
+
+5. computer_use action="capture" mode="vision" with the same pid and window_id.
+
+6. afterimage_locate target="the red Delete item at the bottom of the small popover menu, not Share, Rename, or Archive".
+
+7. computer_use action="click" on that Delete item, delivery_mode="foreground", same pid and window_id.
+
+8. computer_use action="capture" mode="vision" with the same pid and window_id.
+
+9. afterimage_locate target="the white rounded Delete button on the Delete chat? confirmation dialog, not Cancel".
+
+10. computer_use action="click" on that confirmation button, delivery_mode="foreground", same pid and window_id.
+
+11. afterimage_end_record.
+
+Then stop. Do not rehearse or replay. Reply with the saved flow name, path, and the three step titles only.

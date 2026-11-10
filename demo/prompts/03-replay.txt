@@ -1,0 +1,3 @@
+The local ChatGPT sidebar mock is already open on this display. Window title: "ChatGPT". Local HTML only — do not visit chatgpt.com.
+
+The first chat was already deleted by rehearsal. Call afterimage_replay with name="delete-top-chat", repair=false, and times=3 so the same fixed-position clicks delete the next three chats as the list slides up. Do not click the UI yourself. When it returns, summarize ok, passes, token count (should be 0), and stop.
